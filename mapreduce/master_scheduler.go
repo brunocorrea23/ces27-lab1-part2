@@ -47,6 +47,7 @@ func (master *Master) runOperation(remoteWorker *RemoteWorker, operation *Operat
 	var (
 		err  error
 		args *RunArgs
+		novo_worker    *RemoteWorker
 	)
 
 	log.Printf("Running %v (ID: '%v' File: '%v' Worker: '%v')\n", operation.proc, operation.id, operation.filePath, remoteWorker.id)
@@ -56,8 +57,11 @@ func (master *Master) runOperation(remoteWorker *RemoteWorker, operation *Operat
 
 	if err != nil {
 		log.Printf("Operation %v '%v' Failed. Error: %v\n", operation.proc, operation.id, err)
-		wg.Done()
+		// wg.Done()
 		master.failedWorkerChan <- remoteWorker
+		// chamar novamente aqui o runOperation????
+		novo_worker = <-master.idleWorkerChan
+		go master.runOperation(novo_worker, operation, wg)
 	} else {
 		wg.Done()
 		master.idleWorkerChan <- remoteWorker

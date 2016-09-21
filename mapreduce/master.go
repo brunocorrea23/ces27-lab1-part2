@@ -79,6 +79,14 @@ func (master *Master) acceptMultipleConnections() {
 func (master *Master) handleFailingWorkers() {
 	/////////////////////////
 	// YOUR CODE GOES HERE //
+
+	for elem := range master.failedWorkerChan {
+		master.workersMutex.Lock()
+		delete(master.workers, elem.id)
+		master.workersMutex.Unlock()
+		log.Println("Bruno - Removing worker: ", elem.id)
+	}
+
 	/////////////////////////
 }
 
